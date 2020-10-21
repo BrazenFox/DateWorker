@@ -48,8 +48,24 @@ public class DateWorkerImpl implements DateWorker {
 
     @Override
     public int countDays(int year, int month, int day) {
-        Long today = System.currentTimeMillis();
-        System.out.println(today);
-        return 0;
+        if (isValidDate(year, month, day)) {
+            long today = System.currentTimeMillis();
+            today = (int) Math.floor((3 + today / 1000. / 60. / 60.) / 24.);
+            int dayFromStart = 0;
+            for (int i = 0; i < Math.abs(1970 - year); i++) {
+                if (this.isLeapYear(1970 + i))
+                    dayFromStart += 366;
+                else
+                    dayFromStart += 365;
+            }
+            for (int i = 0; i < month - 1; i++) {
+                if (this.isLeapYear(year) && i == 1)
+                    dayFromStart += Month.values()[i].getDays() + 1;
+                else dayFromStart += Month.values()[i].getDays();
+            }
+            dayFromStart += day - 1;
+            return (int) Math.abs(today-dayFromStart);
+        } else
+            throw new IllegalArgumentException("No such date exists");
     }
 }
