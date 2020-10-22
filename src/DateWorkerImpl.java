@@ -1,6 +1,4 @@
-import java.util.HashMap;
-
-public class DateWorkerImpl implements DateWorker {
+public class DateWorkerImpl implements IDateWorker {
 
     @Override
     public boolean isLeapYear(int year) {

@@ -1,4 +1,4 @@
-public interface DateWorker {
+public interface IDateWorker {
     public boolean isLeapYear(int year);
     public boolean isValidDate(int year, int month, int day);
     public int getDayOfWeek(int year, int month, int day);
