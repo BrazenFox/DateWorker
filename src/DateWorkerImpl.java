@@ -35,7 +35,6 @@ public class DateWorkerImpl implements IDateWorker {
             throw new IllegalArgumentException("No such date exists");
     }
 
-
     @Override
     public String toString(int year, int month, int day) {
         if (isValidDate(year, month, day))
