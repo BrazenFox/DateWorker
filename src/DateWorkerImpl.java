@@ -49,6 +49,7 @@ public class DateWorkerImpl implements IDateWorker {
         if (isValidDate(date)) {
             long today = System.currentTimeMillis();
             today = (int) Math.floor((3 + today / 1000. / 60. / 60.) / 24.);
+            System.out.println(today);
             int dayFromStart = 0;
             for (int i = 0; i < Math.abs(1970 - date.getYear()); i++) {
                 dayFromStart += this.isLeapYear(1970 + i) ? 366 : 365;
@@ -57,7 +58,8 @@ public class DateWorkerImpl implements IDateWorker {
                 dayFromStart += Month.values()[i].getDays() + (this.isLeapYear(date.getYear()) && i == 1 ? 1 : 0);
             }
             dayFromStart += date.getDay() - 1;
-            return (int) Math.abs(today - dayFromStart);
+            System.out.println(dayFromStart);
+            return (int) (date.getYear() > 1970 ? Math.abs(today - dayFromStart) : Math.abs(today + dayFromStart));
         } else
             throw new IllegalArgumentException("No such date exists");
     }
