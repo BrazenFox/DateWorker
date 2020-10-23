@@ -1,40 +1,29 @@
-public class DatePojo {
-    int year;
-    int month;
-    int day;
+public class DatePOJO {
+    private final int year;
+    private final int month;
+    private final int day;
 
-    public DatePojo(int year, int month, int day) {
+    public DatePOJO(int year, int month, int day) {
         //Все арифметические действия в конструкторе предназначены для того, чтобы пользователь мог вводить дату в любом формате и ему не выдавался exception
         //Например: 2019.2.29 - 29 февраля в 2019 году не было, поэтому коструктор автоматически создаст дату 2019.3.1 как это делает GregorianCalendar
         int realDay = 0;
         int realYear = 0;
         int realMonth = 0;
         for (int i = 0; i < Math.abs(1970 - year); i++) {
-            if ((1970 + i) % 4 == 1)
-                realDay += 366;
-            else
-                realDay += 365;
+            realDay += (1970 + i) % 4 == 1 ? 366 : 365;
         }
         for (int i = 0; i < (month - 1); i++) {
-            if (year % 4 == 0 && i == 1)
-                realDay += Month.values()[i % 12].getDays() + 1;
-            else realDay += Month.values()[i % 12].getDays();
+            realDay += Month.values()[i % 12].getDays() + ((year % 4 == 0 && i == 1) ? 1 : 0);
         }
         realDay += day - 1;
 
         while (realDay > ((1970 + realYear) % 4 == 0 ? 366 : 365)) {
-            if ((1970 - 1 + realYear) % 4 == 0)
-                realDay -= 366;
-            else
-                realDay -= 365;
+            realDay -= (1970 - 1 + realYear) % 4 == 0 ? 366 : 365;
             realYear++;
         }
 
         while (realDay >= ((1970 + realYear) % 4 == 0 && realMonth == 1 ? Month.values()[realMonth].getDays() + 1 : Month.values()[realMonth].getDays())) {
-            if ((1970 + realYear) % 4 == 0 && realMonth == 1)
-                realDay -= Month.values()[realMonth].getDays() + 1;
-            else
-                realDay -= Month.values()[realMonth].getDays();
+            realDay -= Month.values()[realMonth].getDays() + ((1970 + realYear) % 4 == 0 && realMonth == 1 ? 1 : 0);
             realMonth++;
         }
         this.day = realDay + 1;
@@ -43,15 +32,25 @@ public class DatePojo {
     }
 
     public int getYear() {
-        return year;
+        return this.year;
     }
 
     public int getMonth() {
-        return month;
+        return this.month;
     }
 
     public int getDay() {
-        return day;
+        return this.day;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        DatePOJO obj1 = (DatePOJO) obj;
+        return year == obj1.year &&
+                month == obj1.month &&
+                day == obj1.day;
     }
 
     @Override
@@ -63,17 +62,7 @@ public class DatePojo {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof DatePojo)) {
-            return false;
-        } else {
-            DatePojo obj1 = (DatePojo) obj;
-            return obj1.getDay() == this.getDay() && obj1.getMonth() == this.getMonth() && obj1.getYear() == this.getYear();
-        }
-    }
-
-    @Override
     public String toString() {
-        return  (getDay() < 10 ? "0" + getDay() : getDay()) + " " + Month.values()[month - 1].getMonth() + " " + getYear();
+        return (getDay() < 10 ? "0" + getDay() : getDay()) + " " + Month.values()[month - 1].getMonth() + " " + getYear();
     }
 }

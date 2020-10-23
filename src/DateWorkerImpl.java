@@ -1,31 +1,32 @@
 public class DateWorkerImpl implements IDateWorker {
 
+
     @Override
     public boolean isLeapYear(int year) {
         if (year > 0) {
-            if (year % 4 == 0) {
-                if (year % 100 == 0) {
-                    return year % 400 == 0;
-                } else return true;
-            } else return false;
+            return (year % 4 == 0 && ((year % 100 != 0) || (year % 100 == 0 && year % 400 == 0)));
         } else
             throw new IllegalArgumentException("Уear cannot be negative");
     }
 
     @Override
-    public boolean isValidDate(int year, int month, int day) {
-        if ((month >= 1 && month <= 12) && (day >= 1 && day <= 31) && year > 0) {
-            if (isLeapYear(year) && month == 2) {
-                return day <= 29;
-            } else return day <= (28 + (month + Math.floor(month / 8.0)) % 2 + 2 % month + 2 * Math.floor(1.0 / month));
+    public boolean isValidDate(DatePOJO date) {
+        if ((date.getMonth() >= 1 && date.getMonth() <= 12) && (date.getDay() >= 1 && date.getDay() <= 31) && date.getYear() > 0) {
+            if (isLeapYear(date.getYear()) && date.getMonth() == 2) {
+                return date.getDay() <= 29;
+            } else
+                return date.getDay() <= (28 + (date.getMonth() + Math.floor(date.getMonth() / 8.0)) % 2 + 2 % date.getMonth() + 2 * Math.floor(1.0 / date.getMonth()));
         }
         return false;
     }
 
     @Override
-    public int getDayOfWeek(int year, int month, int day) {
-        if (isValidDate(year, month, day)) {
-            if (month < 3) {
+    public int getDayOfWeek(DatePOJO date) {
+        int year = date.getYear();
+        int month = date.getMonth();
+        int day = date.getDay();
+        if (isValidDate(date)) {
+            if (date.getMonth() < 3) {
                 --year;
                 month += 10;
             } else
@@ -36,32 +37,27 @@ public class DateWorkerImpl implements IDateWorker {
     }
 
     @Override
-    public String toString(int year, int month, int day) {
-        if (isValidDate(year, month, day))
-            return DayOfWeek.values()[getDayOfWeek(year, month, day)].dayString + " " + (day < 10 ? "0" + day : day) + " " + Month.values()[month - 1].getMonth() + " " + year;
+    public String toString(DatePOJO date) {
+        if (isValidDate(date))
+            return DayOfWeek.values()[getDayOfWeek(date)].dayString + " " + date.toString();
         else
             throw new IllegalArgumentException("No such date exists");
     }
 
     @Override
-    public int countDays(int year, int month, int day) {
-        if (isValidDate(year, month, day)) {
+    public int countDays(DatePOJO date) {
+        if (isValidDate(date)) {
             long today = System.currentTimeMillis();
             today = (int) Math.floor((3 + today / 1000. / 60. / 60.) / 24.);
             int dayFromStart = 0;
-            for (int i = 0; i < Math.abs(1970 - year); i++) {
-                if (this.isLeapYear(1970 + i))
-                    dayFromStart += 366;
-                else
-                    dayFromStart += 365;
+            for (int i = 0; i < Math.abs(1970 - date.getYear()); i++) {
+                dayFromStart += this.isLeapYear(1970 + i) ? 366 : 365;
             }
-            for (int i = 0; i < month - 1; i++) {
-                if (this.isLeapYear(year) && i == 1)
-                    dayFromStart += Month.values()[i].getDays() + 1;
-                else dayFromStart += Month.values()[i].getDays();
+            for (int i = 0; i < date.getMonth() - 1; i++) {
+                dayFromStart += Month.values()[i].getDays() + (this.isLeapYear(date.getYear()) && i == 1 ? 1 : 0);
             }
-            dayFromStart += day - 1;
-            return (int) Math.abs(today-dayFromStart);
+            dayFromStart += date.getDay() - 1;
+            return (int) Math.abs(today - dayFromStart);
         } else
             throw new IllegalArgumentException("No such date exists");
     }
